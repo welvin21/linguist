@@ -130,3 +130,12 @@ dmypy.json
 
 # Dataset
 Dataset/
+
+# Weights
+*.hdf5
+
+# Sample data
+sample_data/
+
+# Notebooks
+notebooks/
