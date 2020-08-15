@@ -136,6 +136,8 @@ logs/
 
 # .DS_Store
 .DS_Store
+.idea
+
 
 # Model related files
 *.h5
