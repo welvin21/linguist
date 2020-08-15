@@ -13,8 +13,8 @@ export const Webcam: FC<WebcamProps> = ({ fps, setImageInputTensor }) => {
   const canvasRef = useRef(null);
   const boxRef = useRef(null);
 
-  const height = 51;
-  const width = 68;
+  const height = 480;
+  const width = 640;
 
   useEffect(() => {
     navigator.mediaDevices
@@ -77,15 +77,16 @@ export const Webcam: FC<WebcamProps> = ({ fps, setImageInputTensor }) => {
           autoPlay
           height={height}
           width={width}
+          style={{ transform: "scaleX(-1)" }}
         />
         <div
           style={{
             position: "absolute",
-            top: 10,
-            left: 2,
-            width: 28,
-            height: 28,
-            border: "1px solid blue",
+            top: height / 4,
+            left: width * 0.6,
+            width: width / 2.5,
+            height: width / 2.5,
+            border: "1px solid green",
           }}
         />
       </div>
