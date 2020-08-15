@@ -130,3 +130,9 @@ dmypy.json
 
 # Datasets
 datasets/
+
+# Tensorboard logs
+logs/
+
+# .DS_Store
+.DS_Store
