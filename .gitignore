@@ -130,6 +130,9 @@ dmypy.json
 
 # Dataset
 Dataset/
+*.csv
+*.h5
+*.zip
 
 # Weights
 *.hdf5
