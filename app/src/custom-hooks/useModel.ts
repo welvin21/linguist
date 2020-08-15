@@ -3,6 +3,7 @@ import * as tf from "@tensorflow/tfjs";
 
 export const useModel = () => {
   const modelURL = "http://localhost:8000/model.json";
+  const indianModelUrl = "http://localhost:8000/indian/model.json";
   const [model, setModel] = useState<any>(null);
 
   useEffect(() => {

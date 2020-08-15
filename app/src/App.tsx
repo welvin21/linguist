@@ -1,41 +1,44 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import * as tf from "@tensorflow/tfjs";
-import logo from "./logo.svg";
-import "./App.css";
 
 import { useModel } from "./custom-hooks";
+import { sampleData } from "./data/sampleData";
+import { alphabets } from "./data/alphabets";
+import { generateRandomData } from "./data/generateRandomData";
+import { Webcam } from "./components/Webcam";
 
 const getPrediction = async (
   model: any,
   dataMatrix: number[][][][]
-): Promise<void> => {
-  const mockDataTensor = tf.tensor(dataMatrix, [1, 28, 28, 1]);
+): Promise<number[] | null> => {
+  const now = new Date().getTime();
+  const mockDataTensor = tf.tensor(dataMatrix, [dataMatrix.length, 28, 28, 1]);
 
   if (model) {
     const prediction = await model.predict(mockDataTensor).array();
-    console.log({ prediction });
+    const scores = await tf.tensor2d(prediction).argMax(1).array();
+    const duration = new Date().getTime() - now;
+    console.log({ prediction, scores, duration });
+    // @ts-ignore
+    return scores;
   }
+  return null;
 };
 
 function App() {
   const [model] = useModel();
 
+  const [data, setData] = useState([generateRandomData()]);
+
+  useEffect(() => {
+    getPrediction(model, data).then((result) => {
+      console.log(result);
+    });
+  }, [model, data]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <Webcam fps={10} setImageInputTensor={(imageInputTensor) => {}} />
     </div>
   );
 }
