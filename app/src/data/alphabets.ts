@@ -8,7 +8,6 @@ export const alphabets: string[] = [
   "g",
   "h",
   "i",
-  "j",
   "k",
   "l",
   "m",
@@ -24,5 +23,4 @@ export const alphabets: string[] = [
   "w",
   "x",
   "y",
-  "z",
 ];

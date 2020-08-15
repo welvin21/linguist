@@ -32,13 +32,20 @@ function App() {
 
   useEffect(() => {
     getPrediction(model, data).then((result) => {
-      console.log(result);
+      if (result) {
+        // @ts-ignore
+        const index = result[0];
+        console.log(alphabets[index]);
+      }
     });
   }, [model, data]);
 
   return (
     <div>
-      <Webcam fps={10} setImageInputTensor={(imageInputTensor) => {}} />
+      <Webcam
+        fps={10}
+        setImageInputTensor={(imageInputTensor) => setData([imageInputTensor])}
+      />
     </div>
   );
 }

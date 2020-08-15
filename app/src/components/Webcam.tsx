@@ -15,6 +15,9 @@ export const Webcam: FC<WebcamProps> = ({ fps, setImageInputTensor }) => {
 
   const height = 480;
   const width = 640;
+  const top = height / 4;
+  const left = 150;
+  const canvasScaleFactor = 51 / 480;
 
   useEffect(() => {
     navigator.mediaDevices
@@ -32,13 +35,54 @@ export const Webcam: FC<WebcamProps> = ({ fps, setImageInputTensor }) => {
     // @ts-ignore
     const canvasContext = canvasRef.current.getContext("2d");
     // @ts-ignore
-    canvasRef.current.width = width;
+    canvasRef.current.width = width * canvasScaleFactor;
     // @ts-ignore
-    canvasRef.current.height = height;
+    canvasRef.current.height = height * canvasScaleFactor;
 
-    canvasContext.drawImage(videoRef.current, 0, 0, width, height);
+    canvasContext.drawImage(
+      videoRef.current,
+      0,
+      0,
+      width * canvasScaleFactor,
+      height * canvasScaleFactor
+    );
 
-    const imagePixels = canvasContext.getImageData(2, 10, 28, 28);
+    const imagePixels = canvasContext.getImageData(
+      left * canvasScaleFactor,
+      top * canvasScaleFactor,
+      28,
+      28
+    );
+
+    const imageInputTensor: ImageInputTensor = Array(28)
+      .fill(null)
+      .map(() =>
+        Array(28)
+          .fill(null)
+          .map(() => [0])
+      );
+
+    for (let y = 0; y < imagePixels.height; y++) {
+      for (let x = 0; x < imagePixels.width; x++) {
+        const i = y * 4 * imagePixels.width + x * 4;
+        const avg =
+          (imagePixels.data[i] +
+            imagePixels.data[i + 1] +
+            imagePixels.data[i + 2]) /
+          3;
+        imagePixels.data[i] = avg;
+        imagePixels.data[i + 1] = avg;
+        imagePixels.data[i + 2] = avg;
+
+        const grayscale =
+          imagePixels.data[i] * 0.299 +
+          imagePixels.data[i + 1] * 0.587 +
+          imagePixels.data[i + 2] * 0.114;
+
+        imageInputTensor[y][x][0] = grayscale / 255;
+      }
+    }
+    console.log(imageInputTensor);
 
     // @ts-ignore
     boxRef.current.width = 28;
@@ -56,21 +100,23 @@ export const Webcam: FC<WebcamProps> = ({ fps, setImageInputTensor }) => {
         imagePixels.width,
         imagePixels.height
       );
+
+    setImageInputTensor(imageInputTensor);
   };
 
   useEffect(() => {
     if (!canvasRef || !canvasRef.current || !videoRef) return;
 
-    const loop = setInterval(() => {
-      takePicture();
-    }, 1000 / fps);
+    // const loop = setInterval(() => {
+    //   takePicture();
+    // }, 1000 / fps);
 
-    return () => clearInterval(loop);
+    // return () => clearInterval(loop);
   }, [fps]);
 
   return (
     <div>
-      <div style={{ position: "relative" }}>
+      <div style={{ position: "relative", width: "fit-content" }}>
         <video
           ref={videoRef}
           playsInline
@@ -82,13 +128,19 @@ export const Webcam: FC<WebcamProps> = ({ fps, setImageInputTensor }) => {
         <div
           style={{
             position: "absolute",
-            top: height / 4,
-            left: width * 0.6,
-            width: width / 2.5,
-            height: width / 2.5,
+            top,
+            right: left,
+            width: 256,
+            height: 256,
             border: "1px solid green",
           }}
         />
+        <button
+          style={{ position: "absolute", bottom: 0, right: 0 }}
+          onClick={() => takePicture()}
+        >
+          take picture
+        </button>
       </div>
       <canvas style={{ display: "block" }} ref={canvasRef} />
       <canvas style={{ display: "block" }} ref={boxRef} />
