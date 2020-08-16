@@ -1,6 +1,11 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import "./index.css";
+
+import "typeface-nunito";
+import "typeface-noto-serif";
+import "typeface-inconsolata";
+
+import "./output.css";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 

@@ -6,6 +6,7 @@ import { sampleData } from "./data/sampleData";
 import { alphabets } from "./data/alphabets";
 import { generateRandomData } from "./data/generateRandomData";
 import { Webcam } from "./components/Webcam";
+import { Caption } from "./components/Caption";
 
 const getPrediction = async (
   model: any,
@@ -30,6 +31,8 @@ function App() {
 
   const [data, setData] = useState([generateRandomData()]);
 
+  const [running, setRunning] = useState<boolean>(false);
+
   useEffect(() => {
     getPrediction(model, data).then((result) => {
       if (result) {
@@ -41,11 +44,17 @@ function App() {
   }, [model, data]);
 
   return (
-    <div>
+    <div className={"p-6"}>
       <Webcam
         fps={10}
         setImageInputTensor={(imageInputTensor) => setData([imageInputTensor])}
+        running={running}
+        setRunning={setRunning}
       />
+
+      <div className={"mt-8"}>
+        <Caption start={running} />
+      </div>
     </div>
   );
 }
