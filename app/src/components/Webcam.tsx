@@ -1,14 +1,20 @@
-import React, { FC, useEffect, useRef } from "react";
-// import * as cv from 'opencv';
+import React, { FC, useEffect, useRef, useState } from "react";
 
 import { ImageInputTensor } from "../types/ImageInputTensor";
 
 interface WebcamProps {
   fps: number;
   setImageInputTensor: (data: ImageInputTensor) => void;
+  running: boolean;
+  setRunning: (running: boolean) => void;
 }
 
-export const Webcam: FC<WebcamProps> = ({ fps, setImageInputTensor }) => {
+export const Webcam: FC<WebcamProps> = ({
+  fps,
+  setImageInputTensor,
+  running,
+  setRunning,
+}) => {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const boxRef = useRef(null);
@@ -16,7 +22,7 @@ export const Webcam: FC<WebcamProps> = ({ fps, setImageInputTensor }) => {
   const height = 480;
   const width = 640;
   const top = height / 4;
-  const left = 150;
+  const left = 0;
   const canvasScaleFactor = 51 / 480;
 
   useEffect(() => {
@@ -105,18 +111,21 @@ export const Webcam: FC<WebcamProps> = ({ fps, setImageInputTensor }) => {
   };
 
   useEffect(() => {
-    if (!canvasRef || !canvasRef.current || !videoRef) return;
+    if (!canvasRef || !canvasRef.current || !videoRef || !running) return;
 
-    // const loop = setInterval(() => {
-    //   takePicture();
-    // }, 1000 / fps);
+    const loop = setInterval(() => {
+      takePicture();
+    }, 1000 / fps);
 
-    // return () => clearInterval(loop);
-  }, [fps]);
+    return () => clearInterval(loop);
+  }, [fps, running]);
 
   return (
     <div>
-      <div style={{ position: "relative", width: "fit-content" }}>
+      <div
+        className={"mx-auto"}
+        style={{ position: "relative", width: "fit-content" }}
+      >
         <video
           ref={videoRef}
           playsInline
@@ -126,24 +135,28 @@ export const Webcam: FC<WebcamProps> = ({ fps, setImageInputTensor }) => {
           style={{ transform: "scaleX(-1)" }}
         />
         <div
+          className={"border-2 border-green-500"}
           style={{
             position: "absolute",
             top,
             right: left,
             width: 256,
             height: 256,
-            border: "1px solid green",
           }}
         />
+        <canvas className={"absolute left-0 bottom-0"} ref={boxRef} />
         <button
-          style={{ position: "absolute", bottom: 0, right: 0 }}
-          onClick={() => takePicture()}
+          className={`absolute bottom-0 right-0 px-4 py-2 m-2 ${
+            running
+              ? "bg-red-500 hover:bg-red-400"
+              : "bg-green-500 hover:bg-green-400"
+          } text-white rounded focus:outline-none`}
+          onClick={() => setRunning(!running)}
         >
-          take picture
+          {running ? "stop" : "start"}
         </button>
       </div>
-      <canvas style={{ display: "block" }} ref={canvasRef} />
-      <canvas style={{ display: "block" }} ref={boxRef} />
+      <canvas className={"hidden"} ref={canvasRef} />
     </div>
   );
 };

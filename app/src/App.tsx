@@ -6,6 +6,8 @@ import { sampleData } from "./data/sampleData";
 import { alphabets } from "./data/alphabets";
 import { generateRandomData } from "./data/generateRandomData";
 import { Webcam } from "./components/Webcam";
+import { Caption } from "./components/Caption";
+import { ImageInputTensor } from "./types/ImageInputTensor";
 
 const getPrediction = async (
   model: any,
@@ -28,24 +30,46 @@ const getPrediction = async (
 function App() {
   const [model] = useModel();
 
-  const [data, setData] = useState([generateRandomData()]);
+  const [data, setData] = useState<ImageInputTensor[]>([]);
+
+  const [running, setRunning] = useState<boolean>(false);
+
+  const [text, setText] = useState<string>("");
 
   useEffect(() => {
-    getPrediction(model, data).then((result) => {
-      if (result) {
-        // @ts-ignore
-        const index = result[0];
-        console.log(alphabets[index]);
-      }
-    });
+    if (data.length) {
+      getPrediction(model, data).then((result) => {
+        if (result) {
+          // @ts-ignore
+          const index = result[0];
+          const character = alphabets[index];
+          console.log(character);
+          setText(`${text}${character}`);
+        }
+      });
+    }
   }, [model, data]);
 
   return (
-    <div>
-      <Webcam
-        fps={10}
-        setImageInputTensor={(imageInputTensor) => setData([imageInputTensor])}
-      />
+    <div className={"p-6"}>
+      <div className={"flex justify-center"}>
+        <h1 className={"text-xl"}>Linguist</h1>
+      </div>
+
+      <div className={"mt-4"}>
+        <Webcam
+          fps={1}
+          setImageInputTensor={(imageInputTensor) =>
+            setData([imageInputTensor])
+          }
+          running={running}
+          setRunning={setRunning}
+        />
+      </div>
+
+      <div className={"mt-6"}>
+        <Caption start={running} text={text} setText={setText} />
+      </div>
     </div>
   );
 }
