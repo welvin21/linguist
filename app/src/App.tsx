@@ -9,6 +9,8 @@ import { Webcam } from "./components/Webcam";
 import { Caption } from "./components/Caption";
 import { ImageInputTensor } from "./types/ImageInputTensor";
 
+import logo from "./linguist-logo.png";
+
 const getPrediction = async (
   model: any,
   dataMatrix: number[][][][]
@@ -52,8 +54,9 @@ function App() {
 
   return (
     <div className={"p-6"}>
-      <div className={"flex justify-center"}>
-        <h1 className={"text-xl"}>Linguist</h1>
+      <div className={"flex justify-center items-center"}>
+        <img src={logo} alt={"logo"} className={"h-6 w-auto"} />
+        <h1 className={"mt-1 text-xl"}>inguist</h1>
       </div>
 
       <div className={"mt-4"}>
